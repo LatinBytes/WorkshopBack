@@ -1,6 +1,8 @@
 'use strict'
 const fetch = require('node-fetch')
 
+const GUILD_ID = process.env.GUILD_ID
+
 module.exports = async (req, res, next) => {
   if (req.url.includes('discord') || req.url.includes('login')) {
     next()
@@ -25,7 +27,7 @@ module.exports = async (req, res, next) => {
     return
   }
 
-  const guild = guilds.some(g => g.id === '768278151435386900')
+  const guild = guilds.some(g => g.id === GUILD_ID)
 
   if (!guild) {
     res.redirect(`/login?msg=NoEstaEnElServerDeDiscord`)

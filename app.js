@@ -1,6 +1,7 @@
 'use strict'
 require('dotenv').config()
-const app = require('express')()
+const express = require('express')
+const app = express()
 const bodyParser = require('body-parser')
 const errorHandler = require('./src/utils/errorHandler')
 
@@ -19,13 +20,8 @@ const path = require('path');
 
 app.use(require('./src/middleware/discord'))
 
-app.get('/login', (req, res) => {
-  res.status(200).sendFile(path.join(__dirname, 'index.html'));
-});
-
-app.get('/', (req, res) => {
-  res.status(200).sendFile(path.join(__dirname, 'index.html'));
-});
+app.use('/login', express.static(path.join(__dirname, 'public')))
+app.use('/', express.static(path.join(__dirname, 'public')))
 
 app.use('/discord', require('./src/components/discord/discord'));
 //

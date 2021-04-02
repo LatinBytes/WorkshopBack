@@ -1,6 +1,6 @@
 'use strict'
 const router = require('express').Router()
-const discord = require('../../repositories').http.discord
+const discord = require('../../../repositories').http.discord
 
 router.get('/login', (req, res) => {
   res.redirect(discord.getLoginEndpoint())

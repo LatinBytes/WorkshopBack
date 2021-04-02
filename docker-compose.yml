@@ -8,13 +8,14 @@ services:
       - 3000:3000
     tty: true
     volumes: 
-      - .:/usr/src/app
+      - .:/opt/app
+      - /opt/app/node_modules
     depends_on: 
       - adminer
       - db
     environment: 
       - HOST_DB=db
-    command: npm run dev
+    command: npm run start:dev
 
   db:
     image: postgres
@@ -27,9 +28,12 @@ services:
       POSTGRES_PASSWORD: example
       POSTGRES_DB: ExampleDB
 
-  adminer:
-    image: adminer
+  pgadmin4:
+    image: dpage/pgadmin4
     ports:
-      - 8080:8080
+      - 8080:80
     depends_on: 
       - db
+    environment: 
+      PGADMIN_DEFAULT_EMAIL: example@example.com
+      PGADMIN_DEFAULT_PASSWORD: example

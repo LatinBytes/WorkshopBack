@@ -1,35 +1,36 @@
 'use strict'
-const Sequelize = require('sequelize')
+const { Pool } = require('pg')
+const Log = require('../../../utils/logs')
+const ErrHanlder = require('../../../utils/errorHandler')
 
-const name = process.env.NAME_DB || 'ExampleDB'
-const user = process.env.USER_DB || 'postgres'
-const pass = process.env.PASS_DB || 'example'
-const host = process.env.HOST_DB || 'localhost'
-const type = process.env.TYPE_DB || 'postgres'
-const port = process.env.PORT_DB || 5432
+const user = process.env.PGDB_USER
+const host = process.env.PGDB_HOST
+const port = process.env.PGDB_PORT
+const database = process.env.PGDB_DB_NAME
+const password = process.env.PGDB_USER_PASSWORD
 
-const sequelize = new Sequelize(name, user, pass, {
+const pool = new Pool({
+  user,
   host,
   port,
-  dialect: type,
-
-  pool: {
-    max: 10,
-    min: 0,
-    acquire: 30000,
-    idle: 10000
-  }
+  database,
+  password,
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
 })
 
-const db = {
-  Comments: require('../../../components/comments/comment')(sequelize, Sequelize),
-  Categories: require('../../../components/categories/category')(sequelize, Sequelize),
-}
-
-Object.keys(db).forEach(key => {
-  if ('associate' in db[key]) {
-    db[key].associate(db)
-  }
+pool.on('connect', client => {
+  Log.info(` -- connected to DB --`)
 })
 
-module.exports = { db, sequelize }
+pool.on('remove', client => {
+  Log.info(` -- disconected from DB --`)
+})
+
+pool.on('error', (err, client) => {
+  Log.warn(` -- error on connectio to DB --`)
+  ErrHanlder.handleError(err)
+})
+
+module.exports = pool

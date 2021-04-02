@@ -1,6 +1,6 @@
 'use strict'
 
 module.exports = {
-  //db: require('./db'),
+  db: require('./db'),
   http: require('./http')
 }

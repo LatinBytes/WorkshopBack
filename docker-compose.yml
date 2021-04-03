@@ -11,7 +11,7 @@ services:
       - .:/opt/app
       - /opt/app/node_modules
     depends_on: 
-      - adminer
+      - pgadmin4
       - db
     environment: 
       - HOST_DB=db
@@ -37,3 +37,8 @@ services:
     environment: 
       PGADMIN_DEFAULT_EMAIL: example@example.com
       PGADMIN_DEFAULT_PASSWORD: example
+
+  redis:
+    image: "redis:alpine"
+    ports:
+     - "6379:6379"

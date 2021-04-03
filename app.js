@@ -24,6 +24,18 @@ app.use('/v1', require('./src/components/v1'))
 const userDal = require('./src/components/v1/users/userDAL')
 userDal.getAllUsers();
 
+const redis = require('./src/repositories').db.cache.redis
+redis.set('foo', 'bar')
+
+redis.get('foo').then(function (data) {
+  console.log(data);
+});
+
+redis.get('noex').then(function (data) {
+  console.log(data);
+});
+// test
+
 console.log('running...')
 
 module.exports = app

@@ -1,5 +1,6 @@
 'use strict'
 const fetch = require('node-fetch')
+const redis = require('../repositories').db.cache.redis
 
 const GUILD_ID = process.env.GUILD_ID
 
@@ -10,9 +11,14 @@ module.exports = async (req, res, next) => {
   }
 
   let token = req.query.token
-
   if (!token) {
     res.redirect('/login')
+    return
+  }
+
+  const idUser = await redis.get(token)
+  if (idUser !== null) {
+    next()
     return
   }
 
@@ -33,6 +39,14 @@ module.exports = async (req, res, next) => {
     res.redirect(`/login?msg=NoEstaEnElServerDeDiscord`)
     return
   }
+
+  response = await fetch('https://discordapp.com/api/v6/users/@me', {
+    headers: { 'Authorization': `Bearer ${token}` },
+  })
+
+  const user = await response.json()
+
+  await redis.set(token, user.id)
 
   next()
 }

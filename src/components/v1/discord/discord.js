@@ -15,7 +15,7 @@ router.get('/callback', async (req, res) => {
 
   const json = await discord.getToken(code)
 
-  res.redirect(`/?token=${json.access_token}`)
+  res.redirect(`/#/dashboard?token=${json.access_token}`)
 })
 
 module.exports = router

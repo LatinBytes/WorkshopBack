@@ -13,12 +13,13 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(require('./src/middleware/discord'))
 
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', express.static(path.join(__dirname, 'public')))
-app.use('/login', express.static(path.join(__dirname, 'public')))
+app.all('/web/**', function (req, res, next) {
+  res.sendFile(path.join(__dirname, 'public/index.html'));
+});
 
 app.use('/v1', require('./src/components/v1'))
-
 
 // test
 const userDal = require('./src/components/v1/users/userDAL')

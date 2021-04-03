@@ -5,14 +5,14 @@ const redis = require('../repositories').db.cache.redis
 const GUILD_ID = process.env.GUILD_ID
 
 module.exports = async (req, res, next) => {
-  if (req.url.includes('discord') || req.url.includes('login')) {
+  if (!req.url.includes('v1') || req.url.includes('discord')) {
     next()
     return
   }
 
   let token = req.query.token
   if (!token) {
-    res.redirect('/login')
+    res.redirect('/web/login')
     return
   }
 
@@ -29,14 +29,14 @@ module.exports = async (req, res, next) => {
   const guilds = await response.json()
 
   if (guilds.message === '401: Unauthorized') {
-    res.redirect('/login')
+    res.redirect('/web/login')
     return
   }
 
   const guild = guilds.some(g => g.id === GUILD_ID)
 
   if (!guild) {
-    res.redirect(`/login?msg=NoEstaEnElServerDeDiscord`)
+    res.redirect(`/web/login?msg=NoEstaEnElServerDeDiscord`)
     return
   }
 
@@ -45,6 +45,8 @@ module.exports = async (req, res, next) => {
   })
 
   const user = await response.json()
+
+  console.log(user)
 
   await redis.set(token, user.id)
 
